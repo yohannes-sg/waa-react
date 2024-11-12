@@ -1,0 +1,18 @@
+/* src/components/Post.css */
+
+.post {
+    cursor: pointer;
+    background-color: #4F81BD;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    width: 200px;
+    transition: transform 0.2s ease;
+  }
+  
+  .post:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+  }
+  
