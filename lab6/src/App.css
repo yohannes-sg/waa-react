@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* App.css or index.css */
+.dashboard-posts {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+}
+
+.post-card {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 200px;
+}
+
+.post-details {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+

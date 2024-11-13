@@ -1,54 +1,72 @@
-import React, { useState } from "react";
-import Posts from "./Posts";
+import React, { useEffect, useState } from "react";
+import PostDetails from "./PostDetails";
 
-const Dashboard = () => {
-  const [posts, setPosts] = useState([
-    {
-      id: 111,
-      title: "Happiness",
-      author: "John",
-      gpa: 3.4,
-      content: "This is the content in the post...",
-    },
-    {
-      id: 112,
-      title: "MIU",
-      author: "Dean",
-      gpa: 3.4,
-      content: "This is the content in the post...",
-    },
-    {
-      id: 113,
-      title: "Enjoy Life",
-      author: "Jasmine",
-      gpa: 3.4,
-      content: "This is the content in the post...",
-    },
-  ]);
+function Dashboard() {
+  const [posts, setPosts] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null);
 
-  const [newTitle, setNewTitle] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:8080/api/v1/users/6/posts")
+      .then((response) => response.json())
+      .then((data) => setPosts(data))
+      .catch((error) => console.error("Error fetching posts:", error));
+  }, []);
 
-  // Function to update the first post's title
-  const updateTitle = () => {
-    setPosts((prevPosts) => {
-      const updatedPosts = [...prevPosts];
-      updatedPosts[0].title = newTitle;
-      return updatedPosts;
-    });
+  const handleSelectPost = (post) => {
+    setSelectedPost(post);
+  };
+
+  const handleDeletePost = (postId) => {
+    fetch(`http://localhost:8080/api/v1/users/6/posts/${postId}`, {
+      method: "DELETE",
+    })
+      .then(() =>
+        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId))
+      )
+      .catch((error) => console.error("Error deleting post:", error));
+    setSelectedPost(null);
+  };
+
+  const handleAddPost = (newPost) => {
+    fetch("http://localhost:8080/api/v1/users/6/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPost),
+    })
+      .then((response) => response.json())
+      .then((data) => setPosts((prevPosts) => [...prevPosts, data]))
+      .catch((error) => console.error("Error adding post:", error));
   };
 
   return (
     <div>
-      <Posts posts={posts} />
-      <input
-        type="text"
-        placeholder="Update title for first post"
-        value={newTitle}
-        onChange={(e) => setNewTitle(e.target.value)}
-      />
-      <button onClick={updateTitle}>Update Title</button>
+      <h1>Dashboard</h1>
+      <div style={{ display: "flex", overflowX: "auto", gap: "10px" }}>
+        {posts.map((post) => (
+          <div
+            key={post.id}
+            onClick={() => handleSelectPost(post)}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #ccc",
+              padding: "10px",
+            }}
+          >
+            <h3>{post.title}</h3>
+            <p>{post.author}</p>
+          </div>
+        ))}
+      </div>
+
+      {selectedPost && (
+        <PostDetails
+          post={selectedPost}
+          onDelete={() => handleDeletePost(selectedPost.id)}
+          onAdd={handleAddPost}
+        />
+      )}
     </div>
   );
-};
+}
 
 export default Dashboard;
