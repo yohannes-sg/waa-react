@@ -1,17 +1,17 @@
-import React from "react";
-// import "./Comment.css";
+import React, { memo } from "react";
 
-const Comment = ({ comment }) => {
-  if (!comment) {
-    return <div>Loading...</div>; // Or handle it in a way appropriate for your app
+// Optimized Comment component with memoization
+const Comment = memo(({ id, name }) => {
+  if (!id || !name) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <div>
-      <p>Comment ID: {comment.id}</p>
-      <p>Comment : {comment.name}</p>
+    <div style={{ border: "1px solid #ccc", padding: "10px", margin: "5px" }}>
+      <p>Comment ID: {id}</p>
+      <p>Comment: {name}</p>
     </div>
   );
-};
+});
 
 export default Comment;

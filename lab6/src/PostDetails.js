@@ -1,8 +1,8 @@
-// PostDetails.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Comment from "./Comment";
+import { PostContext } from "./PostContext";
 
-function PostDetails({ post, onDelete, onAdd }) {
+function PostDetails({ onAdd }) {
   const [newPost, setNewPost] = useState({
     title: "",
     author: "",
@@ -11,76 +11,78 @@ function PostDetails({ post, onDelete, onAdd }) {
 
   const [comments, setComments] = useState([]);
 
+  // useRef for AddPost form
+  const titleRef = useRef();
+  const authorRef = useRef();
+  const contentRef = useRef();
+
+  // Context to get the selected post ID globally
+  const { selectedPostId } = useContext(PostContext);
+
+  // Fetch comments when the selected post ID changes
   useEffect(() => {
-    if (post && post.id) {
-      fetch(`http://localhost:8080/api/v1/users/6/posts/${post.id}/comments`)
+    if (selectedPostId) {
+      fetch(
+        `http://localhost:8080/api/v1/users/6/posts/${selectedPostId}/comments`
+      )
         .then((response) => response.json())
         .then((data) => setComments(data))
         .catch((error) => console.error("Error fetching comments:", error));
     }
-  }, [post]);
+  }, [selectedPostId]);
 
   const handleAddPost = () => {
-    if (newPost.title && newPost.author && newPost.content) {
-      onAdd(newPost);
-      setNewPost({ title: "", author: "", content: "" });
+    const newPostData = {
+      title: titleRef.current.value,
+      author: authorRef.current.value,
+      content: contentRef.current.value,
+    };
+
+    if (newPostData.title && newPostData.author && newPostData.content) {
+      onAdd(newPostData);
+      titleRef.current.value = "";
+      authorRef.current.value = "";
+      contentRef.current.value = "";
     }
   };
 
   return (
     <div
-      style={{ marginTop: "20px", border: "1px solid #ddd", padding: "10px" }}
+      style={{
+        marginTop: "20px",
+        border: "1px solid #ddd",
+        padding: "10px",
+      }}
     >
-      <h2>{post.title}</h2>
-      <p>
-        <strong>post Id:</strong> {post.id}
-      </p>
-      <p>
-        <strong>Author:</strong> {post.author}
-      </p>
-      <p>
-        <strong>Content:</strong> {post.content}
-      </p>
-      <button
-        onClick={onDelete}
-        style={{ backgroundColor: "red", color: "white" }}
-      >
-        Delete Post
-      </button>
+      {selectedPostId ? (
+        <>
+          <h2>Post Details</h2>
+          <p>
+            <strong>Post ID:</strong> {selectedPostId}
+          </p>
 
-      <h3>Add New Post</h3>
-      <input
-        type="text"
-        placeholder="Title"
-        value={newPost.title}
-        onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-      />
-      <input
-        type="text"
-        placeholder="Author"
-        value={newPost.author}
-        onChange={(e) => setNewPost({ ...newPost, author: e.target.value })}
-      />
-      <textarea
-        placeholder="Content"
-        value={newPost.content}
-        onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-      ></textarea>
-      <button
-        onClick={handleAddPost}
-        style={{ backgroundColor: "green", color: "white" }}
-      >
-        Add Post
-      </button>
+          <h3>Add New Post</h3>
+          <input ref={titleRef} placeholder="Title" />
+          <input ref={authorRef} placeholder="Author" />
+          <textarea ref={contentRef} placeholder="Content"></textarea>
+          <button
+            onClick={handleAddPost}
+            style={{ backgroundColor: "green", color: "white" }}
+          >
+            Add Post
+          </button>
 
-      <h3>Comments</h3>
-
-      {comments.length > 0 ? (
-        comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} />
-        ))
+          <h3>Comments</h3>
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <Comment key={comment.id} name={comment.name} />
+            ))
+          ) : (
+            <p>No comments available.</p>
+          )}
+        </>
       ) : (
-        <p>No comments available.</p>
+        <p>Please select a post to view details.</p>
       )}
     </div>
   );
