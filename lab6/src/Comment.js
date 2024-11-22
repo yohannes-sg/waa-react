@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 
-// Optimized Comment component with memoization
 const Comment = memo(({ id, name }) => {
   if (!id || !name) {
     return <div>Loading...</div>;

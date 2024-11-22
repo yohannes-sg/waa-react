@@ -11,15 +11,12 @@ function PostDetails({ onAdd }) {
 
   const [comments, setComments] = useState([]);
 
-  // useRef for AddPost form
   const titleRef = useRef();
   const authorRef = useRef();
   const contentRef = useRef();
 
-  // Context to get the selected post ID globally
   const { selectedPostId } = useContext(PostContext);
 
-  // Fetch comments when the selected post ID changes
   useEffect(() => {
     if (selectedPostId) {
       fetch(
