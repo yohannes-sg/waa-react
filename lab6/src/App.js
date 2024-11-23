@@ -1,16 +1,21 @@
 import logo from "./logo.svg";
-import "./App.css";
-import Dashboard from "./Dashboard";
-
-import { PostProvider } from "./PostContext";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./Header";
+import Posts from "./Posts";
+import NewPost from "./NewPost";
+import Login from "./Login";
 
 function App() {
   return (
-    <PostProvider>
-      <div className="App">
-        <Dashboard />
-      </div>
-    </PostProvider>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Posts />} />
+        <Route path="/new-post" element={<NewPost />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 
